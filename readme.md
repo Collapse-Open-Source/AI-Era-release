@@ -16,5 +16,5 @@ Web app mode:
 Teach AI and check some stuff:  
 `python3 ./mod.py`
 
-## Model
-Model doesn't fit GitHub requirements (it's weight is more than 100MB). So it is placed on Google Drive as a tar archieve: `https://drive.google.com/file/d/17lSIUb8o4MLc_Vc-U30XjlXoAQZqKIOI/view?usp=sharing`
+## Model itself
+Model doesn't fit GitHub requirements (it's weight is more than 100MB). So it is placed on Google Drive as a tar archieve: `https://drive.google.com/file/d/17lSIUb8o4MLc_Vc-U30XjlXoAQZqKIOI/view?usp=sharing` or `https://drive.google.com/drive/folders/1ltVonls7YebHUZn67Pw8FozCsHoyF5V2?usp=sharing`
