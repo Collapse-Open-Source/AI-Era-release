@@ -14,4 +14,4 @@ Web app mode:
 `python3 ./app.py`
 
 ## Model
-Model doesn't fit GitHub requirements (it's weight is more than 100MB). So it is placed on Google Drive as a tar archieve
+Model doesn't fit GitHub requirements (it's weight is more than 100MB). So it is placed on Google Drive as a tar archieve: `https://drive.google.com/file/d/17lSIUb8o4MLc_Vc-U30XjlXoAQZqKIOI/view?usp=sharing`
