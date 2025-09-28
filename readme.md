@@ -5,7 +5,7 @@ Exorcist is an Open Source AI tool for comment moderation, which has been create
 It returns 1 if there are swearing in the comment and returns 0 if there are not 
 
 ## How to start
-download dependencies: `pip install torch transformers pandas scikit-learn`  
+download dependencies (note: firstly download a model from google drive): `pip install torch transformers pandas scikit-learn`  
 
 CLI-mode:  
 `python3 ./ai_CLI_starter.py`  
