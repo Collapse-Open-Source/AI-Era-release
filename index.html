@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exorcist Moderation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        body {
+            background: #f7f7f8;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e5e5;
+            background: white;
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .ai-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .header-title p {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-top: 4px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 100%;
+            animation: messageAppear 0.3s ease-out;
+        }
+        
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .user-message {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .moderated-avatar {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+        
+        .ai-message .message-content {
+            background: #f7f7f8;
+            color: #2d3748;
+            border-top-left-radius: 4px;
+        }
+        
+        .user-message .message-content {
+            background: #4299e1;
+            color: white;
+            border-top-right-radius: 4px;
+        }
+        
+        .moderated-message .message-content {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+            border-top-left-radius: 4px;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+        
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #a0aec0;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        
+        @keyframes typing {
+            0%,
+            80%,
+            100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .chat-input-container {
+            padding: 20px;
+            border-top: 1px solid #e5e5e5;
+            background: white;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        .input-wrapper input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            outline: none;
+            font-size: 0.95rem;
+            min-height: 44px;
+            transition: all 0.2s;
+            background: #f7f7f8;
+        }
+        
+        .input-wrapper input:focus {
+            border-color: #4299e1;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+        
+        .input-wrapper input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .send-button {
+            padding: 12px 24px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            min-height: 44px;
+            min-width: 80px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .send-button:hover:not(:disabled) {
+            background: #3182ce;
+            transform: translateY(-1px);
+        }
+        
+        .send-button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .input-hint {
+            font-size: 0.8rem;
+            color: #718096;
+            text-align: center;
+            margin-top: 8px;
+        }
+        /* Scrollbar styling */
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        /* Responsive design */
+        
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+            .message-content {
+                max-width: 85%;
+            }
+            .header-title h1 {
+                font-size: 1.3rem;
+            }
+            .input-wrapper {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .send-button {
+                width: 100%;
+            }
+            body {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-title">
+                <div class="ai-avatar">AI</div>
+                <div>
+                    <h1>Exorcist Moderation</h1>
+                    <p>AI-система для модерации комментариев</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message ai-message">
+                <div class="message-avatar ai-avatar">AI</div>
+                <div class="message-content">
+                    Привет! Я AI-модератор Exorcist. Напишите любой комментарий, и я проверю его на наличие нецензурной лексики.
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <div class="input-wrapper">
+                <input type="text" id="userInput" placeholder="Введите комментарий для проверки на мат..." />
+                <button id="sendButton" class="send-button">
+                    Отправить
+                </button>
+            </div>
+            <div class="input-hint">
+                Нажмите Enter для отправки. Система проверит комментарий на наличие нецензурной лексики.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+
+        let isLoading = false;
+
+        // URL вашего бэкенда - ЗАМЕНИТЕ НА ВАШ РЕАЛЬНЫЙ URL
+        const BACKEND_URL = '/moderate';
+
+        const sendToBackend = async(text) => {
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Ожидаем, что бэкенд возвращает { result: 0 } или { result: 1 }
+                // где 1 - есть мат, 0 - нет мата
+                return data.result === 1;
+            } catch (error) {
+                console.error('Ошибка при обращении к бэкенду:', error);
+                throw error;
+            }
+        };
+
+        const addMessage = (type, text) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+
+            let avatarClass = 'ai-avatar';
+            let avatarText = 'AI';
+
+            if (type === 'user') {
+                avatarClass = 'user-avatar';
+                avatarText = '👤';
+            } else if (type === 'moderated') {
+                avatarClass = 'moderated-avatar';
+                avatarText = '⚠️';
+            }
+
+            messageDiv.innerHTML = `
+                <div class="message-avatar ${avatarClass}">${avatarText}</div>
+                <div class="message-content">${text}</div>
+            `;
+
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        };
+
+        const showTypingIndicator = () => {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai-message';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar ai-avatar">AI</div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+
+            chatMessages.appendChild(typingDiv);
+            scrollToBottom();
+        };
+
+        const hideTypingIndicator = () => {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        };
+
+        const scrollToBottom = () => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+
+        const sendMessage = async() => {
+            if (!userInput.value.trim() || isLoading) return;
+
+            // Добавляем сообщение пользователя
+            addMessage('user', userInput.value);
+            const currentInput = userInput.value;
+            userInput.value = '';
+            updateSendButton();
+
+            isLoading = true;
+            updateSendButton();
+
+            // Показываем индикатор набора
+            showTypingIndicator();
+
+            try {
+                // Отправляем на реальный бэкенд
+                const hasProfanity = await sendToBackend(currentInput);
+
+                hideTypingIndicator();
+
+                if (hasProfanity) {
+                    addMessage('moderated', '⚠️ <strong>Обнаружен мат!</strong> Комментарий содержит нецензурную лексику и будет удален.');
+                } else {
+                    addMessage('ai', '✅ Комментарий прошел модерацию. Нарушений не обнаружено.');
+                }
+            } catch (error) {
+                console.error('Ошибка при модерации:', error);
+                hideTypingIndicator();
+                addMessage('ai', '❌ Ошибка при проверке комментария. Попробуйте еще раз.');
+            } finally {
+                isLoading = false;
+                updateSendButton();
+            }
+        };
+
+        const updateSendButton = () => {
+            const hasText = userInput.value.trim();
+            if (isLoading) {
+                sendButton.innerHTML = '<div class="spinner"></div>';
+                sendButton.disabled = true;
+            } else {
+                sendButton.innerHTML = 'Отправить';
+                sendButton.disabled = !hasText;
+            }
+        };
+
+        // Обработчики событий
+        sendButton.addEventListener('click', sendMessage);
+
+        userInput.addEventListener('input', updateSendButton);
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Фокус на поле ввода при загрузке
+        userInput.focus();
+
+        // Инициализация кнопки
+        updateSendButton();
+    </script>
+</body>
+
+</html>
