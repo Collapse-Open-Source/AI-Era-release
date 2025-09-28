@@ -13,5 +13,8 @@ CLI-mode:
 Web app mode:  
 `python3 ./app.py`
 
+Teach AI and check some stuff:  
+`python3 ./mod.py`
+
 ## Model
 Model doesn't fit GitHub requirements (it's weight is more than 100MB). So it is placed on Google Drive as a tar archieve: `https://drive.google.com/file/d/17lSIUb8o4MLc_Vc-U30XjlXoAQZqKIOI/view?usp=sharing`
